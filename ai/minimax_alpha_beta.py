@@ -1,7 +1,7 @@
 from service.Service import *
 
 class MinimaxAlphaBeta:
-  def __init__(self, turn = '1'):
+  def __init__(self, turn = '0'):
     self.turn = turn
     self.minimax_tree = dict()
   
@@ -32,7 +32,7 @@ class MinimaxAlphaBeta:
     min_child = None
     min_utility = float('inf')
 
-    for child in get_children(state, '2' if self.turn == '1' else '1'):
+    for child in get_children(state, str(1 - int(self.turn))):
       _, utility = self.maximize(child, alpha, beta, K - 1)
       if utility < min_utility:
         min_utility = utility
