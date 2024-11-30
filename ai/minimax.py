@@ -11,7 +11,7 @@ class Minimax:
     def __init__(self):
         self.minimax_tree = []
 
-    def decision(self, state, k):
+    def decision(self, state: int, k: int):
         """
         Decide the best move based on the current game state.
 
@@ -30,7 +30,7 @@ class Minimax:
 
         return self.maximize(state, k)
 
-    def maximize(self, state: int, k):
+    def maximize(self, state: int, k: int):
         """
         Maximize the utility of the game state by selecting the best possible move.
 
@@ -51,7 +51,7 @@ class Minimax:
         max_child = None
         max_utility = -float("inf")
 
-        for child in get_children(state, "2"):
+        for child, _ in get_children(state, "2"):
             _, utility = self.minimize(child, k - 1)
 
             if utility > max_utility:
@@ -61,7 +61,7 @@ class Minimax:
         self.minimax_tree[k][int(state)] = max_utility
         return max_child, max_utility
 
-    def minimize(self, state: int, k):
+    def minimize(self, state: int, k: int):
         """
         Minimize the utility of the game state by selecting the best possible move for the opponent.
 
@@ -82,7 +82,7 @@ class Minimax:
         min_child = None
         min_utility = float("inf")
 
-        for child in get_children(state, "1"):
+        for child, _ in get_children(state, "1"):
             _, utility = self.maximize(child, k - 1)
 
             if utility < min_utility:

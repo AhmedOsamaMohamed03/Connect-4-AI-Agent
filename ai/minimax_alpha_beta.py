@@ -50,7 +50,7 @@ class MinimaxAlphaBeta:
         max_child = None
         max_utility = -float("inf")
 
-        for child in get_children(state, "2"):
+        for child, _ in get_children(state, "2"):
             _, utility = self.minimize(child, alpha, beta, k - 1)
             if utility > max_utility:
                 max_utility = utility
@@ -88,7 +88,7 @@ class MinimaxAlphaBeta:
         min_child = None
         min_utility = float("inf")
 
-        for child in get_children(state, "1"):
+        for child, _ in get_children(state, "1"):
             _, utility = self.maximize(child, alpha, beta, k - 1)
             if utility < min_utility:
                 min_utility = utility

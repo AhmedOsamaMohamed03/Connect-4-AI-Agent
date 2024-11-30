@@ -24,7 +24,7 @@ class Agent:
         return self.current_state
 
     def play(self):
-        state, _ = self.algorithm.decision(self.current_state, self.k)
+        state, _ = self.algorithm.decision(int(self.current_state), self.k)
         agent_decision = self.get_agent_decision(self.current_state, state)
         self.current_state = state
         self.print_minimax_tree()
@@ -49,9 +49,13 @@ class Agent:
             i += 1
 
 
-# if __name__ == '__main__':
-#     start = time.time()
-#     agent = Agent("minimax alpha beta", 2)
-#     print(agent.drop_disc(3))
-#     print(agent.play())
-#     print(f"runtime: {time.time() - start}")
+if __name__ == '__main__':
+    start = time.time()
+    agent = Agent("minimax alpha beta", 4)
+    print(agent.drop_disc(3))
+    print(agent.play())
+    print(agent.drop_disc(4))
+    print(agent.play())
+    print(agent.drop_disc(2))
+    print(agent.play())
+    print(f"runtime: {time.time() - start}")

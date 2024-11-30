@@ -1,5 +1,6 @@
 from minimax import Minimax
 from minimax_alpha_beta import MinimaxAlphaBeta
+from expected_minimax import Expectiminimax
 
 
 class MinimaxFactory:
@@ -9,5 +10,4 @@ class MinimaxFactory:
         elif algorithm == 'minimax alpha beta':
             return MinimaxAlphaBeta()
         else:
-            # TODO -> reserved for the expecti-minimax
-            return None
+            return Expectiminimax()
