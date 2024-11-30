@@ -46,21 +46,21 @@ def get_children_probability(state: int, turn: str, chosen_column: int):
     # Handle the chosen column
     if columns_count[chosen_column] < ROWS:
         index = (ROWS - columns_count[chosen_column] - 1) * COLUMNS + chosen_column
-        new_state = replace_at(state_str, index, turn)
+        new_state = replace_at(state_str, index, "1")
         probability = 0.75 if chosen_column == 0 or chosen_column == COLUMNS - 1 else 0.6
         children.append((int(new_state), probability))
 
     # Handle the left column
     if chosen_column > 0 and columns_count[chosen_column] < ROWS:
         index = (ROWS - columns_count[chosen_column]) * COLUMNS + chosen_column - 1
-        new_state = replace_at(state_str, index, turn)
+        new_state = replace_at(state_str, index, "1")
         probability = 0.25 if chosen_column == COLUMNS - 1 else 0.2
         children.append((int(new_state), probability))
 
     # Handle the right column
     if chosen_column < COLUMNS - 1 and columns_count[chosen_column] < ROWS:
         index = (ROWS - columns_count[chosen_column] - 1) * COLUMNS + chosen_column + 1
-        new_state = replace_at(state_str, index, turn)
+        new_state = replace_at(state_str, index, "1")
         probability = 0.25 if chosen_column == 0 else 0.2
         children.append((int(new_state), probability))
 
