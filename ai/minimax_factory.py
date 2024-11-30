@@ -1,16 +1,13 @@
-from Minimax import Minimax
+from minimax import Minimax
 from minimax_alpha_beta import MinimaxAlphaBeta
 
 
 class MinimaxFactory:
-    def __init__(self, turn):
-        self.turn = turn
-
     def create(self, algorithm):
         if algorithm == 'minimax':
-            return Minimax(self.turn)
+            return Minimax()
         elif algorithm == 'minimax alpha beta':
-            return MinimaxAlphaBeta(self.turn)
+            return MinimaxAlphaBeta()
         else:
             # TODO -> reserved for the expecti-minimax
             return None
