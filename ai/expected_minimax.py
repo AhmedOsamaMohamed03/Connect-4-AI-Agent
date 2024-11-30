@@ -36,3 +36,7 @@ class Expectiminimax:
                 min_child = child
                 
         return  (min_child, min_utility)
+    
+    def decision(self, state, k):
+        child, _ = self.maximize(state, k)
+        return child
