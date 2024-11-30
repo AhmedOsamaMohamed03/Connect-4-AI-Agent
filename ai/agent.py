@@ -1,13 +1,14 @@
+import time
+
 from minimax_factory import MinimaxFactory
 from service.Service import replace_at, COLUMNS, ROWS
 
 
 class Agent:
-    def __init__(self, algorithm_name, k, agent_turn="0"):
+    def __init__(self, algorithm_name, k):
         self.k = k
-        self.agent_turn = agent_turn
         self.current_state = 0
-        self.algorithm = MinimaxFactory(agent_turn).create(algorithm_name)
+        self.algorithm = MinimaxFactory().create(algorithm_name)
         self.last_position = None
 
     def drop_disc(self, column):
@@ -16,7 +17,7 @@ class Agent:
         for row in reversed(range(column, column + COLUMNS * ROWS, COLUMNS)):
             if current_state_str[row] == "0":
                 current_state_str = replace_at(
-                    current_state_str, row, str(1 + int(self.agent_turn))
+                    current_state_str, row, "1"
                 )
                 break
         self.current_state = int(current_state_str)
@@ -24,8 +25,10 @@ class Agent:
 
     def play(self):
         state, _ = self.algorithm.decision(self.current_state, self.k)
+        agent_decision = self.get_agent_decision(self.current_state, state)
+        self.current_state = state
         self.print_minimax_tree()
-        return self.get_agent_decision(self.current_state, state)
+        return agent_decision, int(state)
 
     def get_agent_decision(self, current_state, max_state):
         current_state_str = str(current_state).zfill(COLUMNS * ROWS)
@@ -39,4 +42,16 @@ class Agent:
         return col
 
     def print_minimax_tree(self):
-        self.algorithm.get_minimax_tree()
+        i = 1
+        for level in self.algorithm.get_minimax_tree():
+            print(f"level {i} -> {level}")
+            print(len(level))
+            i += 1
+
+
+# if __name__ == '__main__':
+#     start = time.time()
+#     agent = Agent("minimax alpha beta", 2)
+#     print(agent.drop_disc(3))
+#     print(agent.play())
+#     print(f"runtime: {time.time() - start}")
