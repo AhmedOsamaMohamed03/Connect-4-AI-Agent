@@ -1,7 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QGridLayout, QLineEdit, QComboBox
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,QHBoxLayout,
+                            QLabel, QPushButton, QGridLayout, QLineEdit, QComboBox, QMessageBox)
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from functools import partial
+from ai.agent import Agent
 
 class ConnectFour(QMainWindow):
     def __init__(self):
@@ -11,6 +13,9 @@ class ConnectFour(QMainWindow):
         # Set Window Title, Icon and Geometry (Position) 
         self.setWindowTitle("Connect Four")
         self.setWindowIcon(QIcon("gui\icon.png"))
+        self.start = False
+        self.algorithm_name = "Choose an algorithm"
+        self.k = "Enter the limit k"
         
         # Initialize the UI elements
         self.InitGUI()
@@ -79,12 +84,16 @@ class ConnectFour(QMainWindow):
         # ------------------------------------
         # Define the k input field
         self.input_limit = QLineEdit(self)
-        self.input_limit.setPlaceholderText("Enter the limit k")
+        if self.start:
+            self.input_limit.setText(self.k)
+        else:
+            self.input_limit.setPlaceholderText(self.k)
         self.input_limit.setObjectName("k_input")
         # Define the algorithm selection field
         self.algorithm = QComboBox(self)
-        algorithms = ["Normal Minimax", "Alpha-Beta Pruning Minimax", "Expectiminimax"]
+        algorithms = ["Choose an algorithm", "Minimax", "Alpha-Beta Pruning Minimax", "Expectiminimax"]
         self.algorithm.addItems(algorithms)
+        self.algorithm.setCurrentIndex(algorithms.index(self.algorithm_name))
         # Define Start button
         self.start_game = QPushButton("Start Game", self)
         self.start_game.clicked.connect(self.initiate_game)
@@ -102,24 +111,92 @@ class ConnectFour(QMainWindow):
     
     def initiate_game(self):
         
+        # Get the limit k from the input field and get an agent instance
+        self.k = self.input_limit.text()
+        self.algorithm_name = self.algorithm.currentText()
+        if self.validate_inputs():
+            self.agent = Agent(self.algorithm_name, int(self.k))
+        else: 
+            return
+        
         # Initiate the game variables and slots
+        self.start = True
         print("Game Started")
         self.InitGUI()
         self.setStyles()
     
+    def validate_inputs(self):
+        
+        valid = True
+        
+        # Check if and k is a number
+        try: 
+            k = int(self.k)
+        except ValueError :
+            valid = False
+        
+        # Check if an algorithm is selected
+        if self.algorithm_name == "Choose an algorithm":
+            valid = False
+        
+        # If the inputs are invalid, show a pop-up message
+        if not valid:
+            self.pop_up = QMessageBox(self)
+            self.pop_up.setText("Please enter a valid number for k and select an algorithm")
+            self.pop_up.setWindowTitle("Invalid Inputs")
+            self.pop_up.setIcon(QMessageBox.Warning)
+            # self.pop_up.setStandardButtons(QMessageBox.Ok)
+            # self.pop_up.setStyleSheet("background-color: #0F172A; color: #b0b2b5;")
+            self.pop_up.setStyleSheet("color: black;")
+            self.pop_up.exec()
+            return False
+        
+        return True
+    
     def play(self, row, col):
         
         # Check if it's the agent's turn
-        if self.turn == 0:
+        if self.turn == 0 or not self.start:
             return
         
         # Check if the column chosen is available for play
         if self.next_place[col] == -1 or self.next_place[col] < row:
             return
         
-        color = self.player_color if self.turn == 1 else self.agent_color
-        self.board[self.next_place[col]][col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
+        # Drop the disc and update the board
+        color = self.player_color
+        self.agent.drop_disc(col)
+        
+        # self.agent_score, self.player_score= self.agent.drop_disc(col)
+        # self.player_scoreboard.setText(str(self.player_score))
+        # self.agent_scoreboard.setText(str(self.agent_score))
+        
+        # self.board[self.next_place[col]][col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
+        self.board[self.next_place[col]][col].setStyleSheet(f"""
+                                                                        background-color: {color};
+                                                                        height: 90px;
+                                                                        width: 90px;
+                                                                        border: 7px solid #edb055;
+                                                                        border-radius: 48.5;""")
         self.next_place[col] -= 1
+        self.turn = 1 - self.turn
+        
+        # Wait for the agent to play
+        agent_col, state = self.agent.play()
+        
+        # agent_col, self.agent_score, self.player_score = self.agent.play()
+        # self.player_scoreboard.setText(str(self.player_score))
+        # self.agent_scoreboard.setText(str(self.agent_score))
+        
+        color = self.agent_color
+        # self.board[self.next_place[agent_col]][agent_col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
+        self.board[self.next_place[agent_col]][agent_col].setStyleSheet(f"""
+                                                                        background-color: {color};
+                                                                        height: 90px;
+                                                                        width: 90px;
+                                                                        border: 7px solid #cc3939;
+                                                                        border-radius: 48.5;""")
+        self.next_place[agent_col] -= 1
         self.turn = 1 - self.turn
         
         
@@ -136,6 +213,7 @@ class ConnectFour(QMainWindow):
         self.input_limit.setFixedSize(200, 50)
         self.input_limit.setAlignment(Qt.AlignCenter)
         self.inputs_layout.setSpacing(20)
+        self.inputs_layout.setContentsMargins(0, 10, 0, 10)
         self.scoreboard_layout.setSpacing(0)
         
         # CSS Properties
@@ -177,23 +255,26 @@ class ConnectFour(QMainWindow):
                 }
                 
                 QLineEdit{
-                    font-size: 50px;
+                    font-size: 60px;
                     font-family: 'Brush Script MT', cursive;
                     font-weight: bold;
-                    color: #898c90;
                     padding: 5px;
-                    border: 1px groove #aca5b0;
+                    border: 1px groove black;
                     height: 50px;
                     border-radius: 6;
                 }
                 
                 QLineEdit#player_points {
+                    font-size: 50px;
+                    color: #898c90;
                     background-color: #ff9900;
                     border-top-left-radius: 0px;
                     border-bottom-left-radius: 0px;
                 }
                 
                 QLineEdit#agent_points {
+                    font-size: 50px;
+                    color: #898c90;
                     background-color: #cc0000;
                     border-top-right-radius: 0px;
                     border-bottom-right-radius: 0px;
@@ -228,4 +309,5 @@ def main():
     window.show()
     app.exec()
 
-main()
+if __name__ == "__main__":
+    main()

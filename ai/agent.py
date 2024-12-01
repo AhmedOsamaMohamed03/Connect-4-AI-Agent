@@ -1,6 +1,6 @@
 import time
 
-from minimax_factory import MinimaxFactory
+from ai.minimax_factory import MinimaxFactory
 from service.Service import replace_at, COLUMNS, ROWS
 
 
