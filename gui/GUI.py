@@ -11,7 +11,6 @@ class ConnectFour(QMainWindow):
         # Set Window Title, Icon and Geometry (Position) 
         self.setWindowTitle("Connect Four")
         self.setWindowIcon(QIcon("gui\icon.png"))
-        # 0 for agent and 1 for player
         
         # Initialize the UI elements
         self.InitGUI()
@@ -23,7 +22,8 @@ class ConnectFour(QMainWindow):
         
         # Define the game variables
         self.next_place = [5 for i in range(7)]
-        self.turn = 0
+        self.turn = 1
+        # 1 for agent and 1 for player
         
         # Define the central widget and the layouts
         self.central_widget = QWidget()
@@ -108,15 +108,19 @@ class ConnectFour(QMainWindow):
         self.setStyles()
     
     def play(self, row, col):
-
+        
+        # Check if it's the agent's turn
+        if self.turn == 0:
+            return
+        
         # Check if the column chosen is available for play
         if self.next_place[col] == -1 or self.next_place[col] < row:
             return
-        else:
-            color = self.player_color if self.turn == 1 else self.agent_color
-            self.board[self.next_place[col]][col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
-            self.next_place[col] -= 1
-            self.turn = 1 - self.turn
+        
+        color = self.player_color if self.turn == 1 else self.agent_color
+        self.board[self.next_place[col]][col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
+        self.next_place[col] -= 1
+        self.turn = 1 - self.turn
         
         
     def setStyles(self):
