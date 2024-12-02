@@ -88,9 +88,9 @@ def eval(state: int):
 
 
 def heuristic(board):
-    w4 = 8
-    w3 = 4
-    w2 = 2
+    w4 = 1000
+    w3 = 100
+    w2 = 10
     agent_4s = count_diagonal_disks(board, 1, 4) + count_vertical_disks(board, 1, 4) + count_horizontal_disks(board, 1,
                                                                                                               4)
     agent_3s = count_diagonal_disks(board, 1, 3) + count_vertical_disks(board, 1, 3) + count_horizontal_disks(board, 1,
