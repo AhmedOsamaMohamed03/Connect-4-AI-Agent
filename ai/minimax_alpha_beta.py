@@ -119,3 +119,6 @@ class MinimaxAlphaBeta:
         """
         self.minimax_tree.reverse()
         return self.minimax_tree
+
+    def get_parent(self):
+        return self.parent

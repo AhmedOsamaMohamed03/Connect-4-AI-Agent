@@ -27,8 +27,8 @@ class Agent:
         state, _ = self.algorithm.decision(int(self.current_state), self.k)
         agent_decision = self.get_agent_decision(self.current_state, state)
         self.current_state = str(state).zfill(SIZE)
-        self.print_minimax_tree()
-        return agent_decision, self.calculate_score(1)
+        # self.print_minimax_tree()
+        return agent_decision, self.calculate_score(1), self.algorithm.get_parent()
 
     def get_agent_decision(self, current_state, max_state):
         current_state_str = str(current_state).zfill(SIZE)
@@ -48,7 +48,7 @@ class Agent:
             print(f"level {i} -> {level}")
             # print(len(level))
             i += 1
-        print()
+        return tree
 
     def calculate_score(self, turn):
         self.current_state = str(self.current_state).zfill(SIZE)
