@@ -10,6 +10,7 @@ class MinimaxAlphaBeta:
 
     def __init__(self):
         self.minimax_tree = []
+        self.parent = {}
 
     def decision(self, state, k):
         """
@@ -23,6 +24,7 @@ class MinimaxAlphaBeta:
             tuple: A tuple containing the best child state (next move) and its associated utility value.
         """
         self.minimax_tree = []
+        self.parent = {}
         for i in range(k):
             self.minimax_tree.append({})
 
@@ -52,6 +54,7 @@ class MinimaxAlphaBeta:
 
         for child, _ in get_children(state, "2"):
             _, utility = self.minimize(child, alpha, beta, k - 1)
+            self.parent[child] = state
             if utility > max_utility:
                 max_utility = utility
                 max_child = child
@@ -90,6 +93,7 @@ class MinimaxAlphaBeta:
 
         for child, _ in get_children(state, "1"):
             _, utility = self.maximize(child, alpha, beta, k - 1)
+            self.parent[child] = state
             if utility < min_utility:
                 min_utility = utility
                 min_child = child

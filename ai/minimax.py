@@ -10,6 +10,7 @@ class Minimax:
 
     def __init__(self):
         self.minimax_tree = []
+        self.parent = {}
 
     def decision(self, state: int, k: int):
         """
@@ -25,6 +26,7 @@ class Minimax:
             tuple: A tuple containing the best child state (next move) and its associated utility value.
         """
         self.minimax_tree = []
+        self.parent = {}
         for i in range(k):
             self.minimax_tree.append({})
 
@@ -53,6 +55,7 @@ class Minimax:
 
         for child, _ in get_children(state, "2"):
             _, utility = self.minimize(child, k - 1)
+            self.parent[child] = state
 
             if utility > max_utility:
                 max_utility = utility
@@ -84,6 +87,7 @@ class Minimax:
 
         for child, _ in get_children(state, "1"):
             _, utility = self.maximize(child, k - 1)
+            self.parent[child] = state
 
             if utility < min_utility:
                 min_utility = utility
