@@ -18,6 +18,7 @@ class Agent:
         self.current_state = 0  # Encoded game state, initially empty
         self.algorithm = MinimaxFactory().create(algorithm_name)  # Create the algorithm instance
         self.last_position = None  # The column where the last disc was dropped
+        self.algorithm_name = algorithm_name
 
     def drop_disc(self, column):
         """
@@ -48,7 +49,10 @@ class Agent:
         """
         start = time.time()
         # Use the algorithm to decide the next move
-        state, _ = self.algorithm.decision(int(self.current_state), self.k)
+        if self.algorithm_name == 'Expectiminimax':
+            state, _ = self.algorithm.decision(int(self.current_state), self.k, self.last_position)
+        else:
+            state, _ = self.algorithm.decision(int(self.current_state), self.k)
         # Determine the column chosen by the agent
         agent_decision = self.get_agent_decision(self.current_state, state)
         # Update the current state with the agent's move

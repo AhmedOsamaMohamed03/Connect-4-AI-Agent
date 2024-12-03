@@ -29,40 +29,41 @@ def get_children(state: int, turn: str):
 
 def get_children_probability(state: int, turn: str, chosen_column: int):
     """
-    Params:
-        state (int): The current board state represented as an integer.
+    Generate child states for a Connect 4 board based on the chosen column 
+    and probabilities for neighboring columns.
+
+    Args:
+        state (int): The current board state as an integer.
         turn (str): The current player's turn ('0' or '1').
-        chosen_column (int): The column the player places the disk in.
+        chosen_column (int): The column where the player places the disk.
 
     Returns:
-        List[Tuple[str, float]]: A list of child states with their probabilities.
+        List[Tuple[int, float, int]]: A list of child states with their probabilities and column indexes.
     """
-    state_str = str(state)
-    state_str = state_str.zfill(SIZE)
-
+    state_str = str(state).zfill(SIZE)
     columns_count = count_disks_per_column(state_str)
     children = []
 
-    # Handle the chosen column
-    if columns_count[chosen_column] < ROWS:
-        index = (ROWS - columns_count[chosen_column] - 1) * COLUMNS + chosen_column
-        new_state = replace_at(state_str, index, "1")
-        probability = 0.75 if chosen_column == 0 or chosen_column == COLUMNS - 1 else 0.6
-        children.append((int(new_state), probability))
-
-    # Handle the left column
-    if chosen_column > 0 and columns_count[chosen_column] < ROWS:
-        index = (ROWS - columns_count[chosen_column]) * COLUMNS + chosen_column - 1
-        new_state = replace_at(state_str, index, "1")
-        probability = 0.25 if chosen_column == COLUMNS - 1 else 0.2
-        children.append((int(new_state), probability))
-
-    # Handle the right column
-    if chosen_column < COLUMNS - 1 and columns_count[chosen_column] < ROWS:
-        index = (ROWS - columns_count[chosen_column] - 1) * COLUMNS + chosen_column + 1
-        new_state = replace_at(state_str, index, "1")
-        probability = 0.25 if chosen_column == 0 else 0.2
-        children.append((int(new_state), probability))
+    for col_offset in (0, -1, 1):  # Chosen column, left, and right
+        col = chosen_column + col_offset
+        if 0 <= col and col < COLUMNS and columns_count[col] < ROWS:  # Valid column with space
+            index = (ROWS - columns_count[col] - 1) * COLUMNS + col
+            if state_str[index] != '0':  # Ensure the position is empty
+                continue
+            new_state = replace_at(state_str, index, turn)
+            if col == chosen_column:
+                probability = 0.75 if chosen_column in (0, COLUMNS - 1) else 0.6
+            else:
+                probability = 0.25 if chosen_column in (0, COLUMNS - 1) else 0.2
+            children.append((int(new_state), probability, col))
+    
+    if len(children) == 0:
+        for i in range(COLUMNS):
+            if columns_count[i] < ROWS:
+                index = (ROWS - columns_count[i] - 1) * COLUMNS + i
+                new_state = replace_at(state_str, index, turn)
+                children.append((int(new_state), 1, i))
+                break
 
     return children
 
@@ -72,12 +73,13 @@ def replace_at(state: str, ind: int, new_char: str):
 
 
 def count_disks_per_column(state: str):
-    columns = [0] * COLUMNS
+    columns = [0] * COLUMNS  # Initialize counts for all columns
     for i in range(ROWS):
         for j in range(COLUMNS):
-            if state[i * COLUMNS + j] != '0':
-                columns[j] = max(columns[j], ROWS - i)
+            if state[i * COLUMNS + j] != '0':  # Non-empty cell
+                columns[j] += 1
     return columns
+
 
 
 def eval(state: int):
