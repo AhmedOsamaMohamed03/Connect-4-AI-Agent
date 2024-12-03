@@ -196,8 +196,7 @@ class ConnectFour(QMainWindow):
         # Wait for the agent to play
         # agent_col, state = self.agent.play()
         
-        agent_col, self.agent_score = self.agent.play()
-        # self.player_scoreboard.setText(str(self.player_score))
+        agent_col, self.agent_score, _ = self.agent.play()
         self.agent_scoreboard.setText(str(self.agent_score))
         
         color = self.agent_color
@@ -213,22 +212,22 @@ class ConnectFour(QMainWindow):
         self.turn = 1 - self.turn
         
         # Tree Visualization
-        i = 1
-        ellipse1 = QGraphicsEllipseItem(10, 10, 50*i, 50*i)
-        ellipse2 = QGraphicsEllipseItem(0, 0, 200*i, 200*i)
-        line = QGraphicsLineItem(0, 0, 100*i, 100*i)
-        ellipse1.setBrush(Qt.white)
-        ellipse2.setBrush(Qt.black)
-        ellipse2.setAcceptTouchEvents(True)
-        ellipse1.setAcceptTouchEvents(True)
-        ellipse1.setAcceptDrops(True)
-        # ellipse2.childItems().append(ellipse1)
-        # line.setLine(QLineF(ellipse1, ellipse2))
-        self.scene.addItem(ellipse1)
-        self.scene.addItem(ellipse2)
-        self.scene.addItem(line)
+        # i = 1
+        # ellipse1 = QGraphicsEllipseItem(10, 10, 50*i, 50*i)
+        # ellipse2 = QGraphicsEllipseItem(0, 0, 200*i, 200*i)
+        # line = QGraphicsLineItem(0, 0, 100*i, 100*i)
+        # ellipse1.setBrush(Qt.white)
+        # ellipse2.setBrush(Qt.black)
+        # ellipse2.setAcceptTouchEvents(True)
+        # ellipse1.setAcceptTouchEvents(True)
+        # ellipse1.setAcceptDrops(True)
+        # # ellipse2.childItems().append(ellipse1)
+        # # line.setLine(QLineF(ellipse1, ellipse2))
+        # self.scene.addItem(ellipse1)
+        # self.scene.addItem(ellipse2)
+        # self.scene.addItem(line)
         
-        self.tree_layout.addWidget(self.QGraphicsView)
+        # self.tree_layout.addWidget(self.QGraphicsView)
         
         # self.tree_layout.addWidget(self.ellipse)
         
