@@ -14,7 +14,7 @@ class ConnectFour(QMainWindow):
         
         # Set Window Title, Icon and Geometry (Position) 
         self.setWindowTitle("Connect Four")
-        self.setWindowIcon(QIcon("gui\icon.png"))
+        self.setWindowIcon(QIcon("gui/icon.png"))
         self.start = False
         self.algorithm_name = "Choose an algorithm"
         self.k = "Enter the limit k"
@@ -176,6 +176,8 @@ class ConnectFour(QMainWindow):
         
         # Drop the disc and update the board
         color = self.player_color
+        # self.agent.drop_disc(col)
+        
         _, self.player_score= self.agent.drop_disc(col)
         self.player_scoreboard.setText(str(self.player_score))
         self.agent_scoreboard.setText(str(self.agent_score))
@@ -192,8 +194,12 @@ class ConnectFour(QMainWindow):
         self.turn = 1 - self.turn
         
         # Wait for the agent to play
+        # agent_col, state = self.agent.play()
+        
         agent_col, self.agent_score = self.agent.play()
+        # self.player_scoreboard.setText(str(self.player_score))
         self.agent_scoreboard.setText(str(self.agent_score))
+        
         color = self.agent_color
         
         # self.board[self.next_place[agent_col]][agent_col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
