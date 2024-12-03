@@ -1,7 +1,9 @@
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,QHBoxLayout,
-                            QLabel, QPushButton, QGridLayout, QLineEdit, QComboBox, QMessageBox)
+                            QLabel, QPushButton, QGridLayout, QLineEdit, QComboBox, QMessageBox,
+                            QGraphicsView, QGraphicsEllipseItem, QGraphicsScene, QGraphicsLineItem)
+import time
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLineF
 from functools import partial
 from ai.agent import Agent
 
@@ -32,16 +34,25 @@ class ConnectFour(QMainWindow):
         
         # Define the central widget and the layouts
         self.central_widget = QWidget()
+        self.window_layout = QHBoxLayout()
+        self.tree_layout = QVBoxLayout()
         self.main_layout = QVBoxLayout()
         self.scoreboard_layout = QHBoxLayout()
         self.board_layout = QGridLayout()
         self.board_widget = QWidget()
         self.inputs_layout = QHBoxLayout()
         
+        self.QGraphicsView = QGraphicsView()
+        self.scene = QGraphicsScene()
+        self.QGraphicsView.setScene(self.scene)
+        
+        
         # Set the central layout
         self.board_widget.setLayout(self.board_layout)        
         self.setCentralWidget(self.central_widget)
-        self.central_widget.setLayout(self.main_layout)
+        self.window_layout.addLayout(self.main_layout)
+        self.window_layout.addLayout(self.tree_layout)
+        self.central_widget.setLayout(self.window_layout)
         
         # Set some object names for CSS styling
         self.board_widget.setObjectName("board")
@@ -165,30 +176,26 @@ class ConnectFour(QMainWindow):
         
         # Drop the disc and update the board
         color = self.player_color
-        self.agent.drop_disc(col)
-        
-        # self.agent_score, self.player_score= self.agent.drop_disc(col)
-        # self.player_scoreboard.setText(str(self.player_score))
-        # self.agent_scoreboard.setText(str(self.agent_score))
+        _, self.player_score= self.agent.drop_disc(col)
+        self.player_scoreboard.setText(str(self.player_score))
+        self.agent_scoreboard.setText(str(self.agent_score))
         
         # self.board[self.next_place[col]][col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
         self.board[self.next_place[col]][col].setStyleSheet(f"""
-                                                                        background-color: {color};
-                                                                        height: 90px;
-                                                                        width: 90px;
-                                                                        border: 7px solid #edb055;
-                                                                        border-radius: 48.5;""")
+                                                            background-color: {color};
+                                                            height: 90px;
+                                                            width: 90px;
+                                                            border: 7px solid #edb055;
+                                                            border-radius: 48.5;""")
+        
         self.next_place[col] -= 1
         self.turn = 1 - self.turn
         
         # Wait for the agent to play
-        agent_col, state = self.agent.play()
-        
-        # agent_col, self.agent_score, self.player_score = self.agent.play()
-        # self.player_scoreboard.setText(str(self.player_score))
-        # self.agent_scoreboard.setText(str(self.agent_score))
-        
+        agent_col, self.agent_score = self.agent.play()
+        self.agent_scoreboard.setText(str(self.agent_score))
         color = self.agent_color
+        
         # self.board[self.next_place[agent_col]][agent_col].setStyleSheet(f"background-color: {color}; border: 1px groove {color};")
         self.board[self.next_place[agent_col]][agent_col].setStyleSheet(f"""
                                                                         background-color: {color};
@@ -199,6 +206,28 @@ class ConnectFour(QMainWindow):
         self.next_place[agent_col] -= 1
         self.turn = 1 - self.turn
         
+        # Tree Visualization
+        i = 1
+        ellipse1 = QGraphicsEllipseItem(10, 10, 50*i, 50*i)
+        ellipse2 = QGraphicsEllipseItem(0, 0, 200*i, 200*i)
+        line = QGraphicsLineItem(0, 0, 100*i, 100*i)
+        ellipse1.setBrush(Qt.white)
+        ellipse2.setBrush(Qt.black)
+        ellipse2.setAcceptTouchEvents(True)
+        ellipse1.setAcceptTouchEvents(True)
+        ellipse1.setAcceptDrops(True)
+        # ellipse2.childItems().append(ellipse1)
+        # line.setLine(QLineF(ellipse1, ellipse2))
+        self.scene.addItem(ellipse1)
+        self.scene.addItem(ellipse2)
+        self.scene.addItem(line)
+        
+        self.tree_layout.addWidget(self.QGraphicsView)
+        
+        # self.tree_layout.addWidget(self.ellipse)
+        
+        # self.main_layout.addWidget(self.ellipse)
+        # self.main_layout.addWidget(self.ellipse)
         
     def setStyles(self):
         
@@ -215,6 +244,8 @@ class ConnectFour(QMainWindow):
         self.inputs_layout.setSpacing(20)
         self.inputs_layout.setContentsMargins(0, 10, 0, 10)
         self.scoreboard_layout.setSpacing(0)
+        self.window_layout.setSpacing(0)
+        # self.QGraphicsView.setStyleSheet("background-color: #0F172A;")
         
         # CSS Properties
         # --------------
@@ -299,6 +330,22 @@ class ConnectFour(QMainWindow):
                     font-family: 'Trebuchet MS', sans-serif;
                     font-weight: bold;
                     height: 42px;
+                }
+                
+                QGraphicsScene{
+                    border-left: 2px solid #8ea4a9;
+                    baclground-color: #0F172A;
+                }
+                
+                QGraphicsView{
+                    border-left: 2px solid #8ea4a9;
+                    background-color: #0F172A;
+                    margin-left: 20px;
+                    min-width: 800px;
+                }
+                
+                QGraphicsEllipseItem{
+                    background-color: white;
                 }
             """)
         
